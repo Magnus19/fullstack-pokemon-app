@@ -1,0 +1,104 @@
+<main class="min-h-screen bg-[linear-gradient(135deg,_#f5f5e9_0%,_#e9f1e9_54%,_#f7eee4_100%)] px-[clamp(18px,6vw,88px)] py-[clamp(24px,5vw,64px)] text-[#203a36]">
+  <header class="mx-auto mb-[34px] flex max-w-[1180px] items-end justify-between gap-5 border-b border-[#bdc9be] pb-[22px] max-[520px]:items-start">
+    <div>
+      <p class="mb-2 text-[0.72rem] font-extrabold tracking-[0.12em] text-[#527a69]">TRAINER'S FIELD NOTES</p>
+      <h1 class="m-0 font-serif text-[clamp(2rem,5vw,3.2rem)] font-medium">Pokémon Registry</h1>
+    </div>
+    <p class="mb-[5px] text-right text-[0.9rem] font-bold text-[#527a69]">{{ pokemonService.pokemonList().length }} entries</p>
+  </header>
+
+  <div class="mx-auto grid max-w-[1180px] grid-cols-[minmax(280px,0.78fr)_minmax(0,1.22fr)] items-start gap-[clamp(28px,5vw,68px)] max-[760px]:grid-cols-1">
+    <section class="rounded-md border border-[#c6d3c8] bg-white/70 p-7 shadow-[0_14px_34px_rgb(36_65_54_/_7%)] max-[520px]:px-[18px] max-[520px]:py-[21px]" aria-labelledby="form-title">
+      <p class="mb-2 text-[0.72rem] font-extrabold tracking-[0.12em] text-[#527a69]">{{ editingId() ? 'EDIT ENTRY' : 'NEW ENTRY' }}</p>
+      <h2 id="form-title" class="mb-6 font-serif text-[1.65rem] font-medium">{{ editingId() ? 'Update Pokémon' : 'Register Pokémon' }}</h2>
+
+      <form [formGroup]="pokemonForm" (ngSubmit)="onSubmit()">
+        <div class="grid grid-cols-2 gap-x-[14px] gap-y-[18px] max-[520px]:grid-cols-1">
+          <div class="min-w-0">
+            <label class="mb-[7px] block text-[0.86rem] font-bold text-[#38564d]" for="name">Name</label>
+            <input class="box-border min-h-11 w-full rounded border border-[#b9c8bd] bg-white px-3 py-2.5 font-sans text-base text-[#203a36] outline-none focus-visible:border-[#197a69] focus-visible:ring-[3px] focus-visible:ring-[#197a69]/[0.16]" id="name" type="text" formControlName="name" placeholder="Pikachu" />
+            @if (pokemonForm.controls.name.invalid && pokemonForm.controls.name.touched) {
+              <p class="mt-1.5 text-[0.8rem] text-[#a43c32]">Name is required.</p>
+            }
+          </div>
+
+          <div class="min-w-0">
+            <label class="mb-[7px] block text-[0.86rem] font-bold text-[#38564d]" for="type">Type</label>
+            <input class="box-border min-h-11 w-full rounded border border-[#b9c8bd] bg-white px-3 py-2.5 font-sans text-base text-[#203a36] outline-none focus-visible:border-[#197a69] focus-visible:ring-[3px] focus-visible:ring-[#197a69]/[0.16]" id="type" type="text" formControlName="type" placeholder="Electric" />
+            @if (pokemonForm.controls.type.invalid && pokemonForm.controls.type.touched) {
+              <p class="mt-1.5 text-[0.8rem] text-[#a43c32]">Type is required.</p>
+            }
+          </div>
+
+          <div class="min-w-0">
+            <label class="mb-[7px] block text-[0.86rem] font-bold text-[#38564d]" for="level">Level</label>
+            <input class="box-border min-h-11 w-full rounded border border-[#b9c8bd] bg-white px-3 py-2.5 font-sans text-base text-[#203a36] outline-none focus-visible:border-[#197a69] focus-visible:ring-[3px] focus-visible:ring-[#197a69]/[0.16]" id="level" type="number" formControlName="level" min="1" />
+            @if (pokemonForm.controls.level.invalid && pokemonForm.controls.level.touched) {
+              <p class="mt-1.5 text-[0.8rem] text-[#a43c32]">Level must be at least 1.</p>
+            }
+          </div>
+
+          <div class="min-w-0">
+            <label class="mb-[7px] block text-[0.86rem] font-bold text-[#38564d]" for="nature">Nature</label>
+            <input class="box-border min-h-11 w-full rounded border border-[#b9c8bd] bg-white px-3 py-2.5 font-sans text-base text-[#203a36] outline-none focus-visible:border-[#197a69] focus-visible:ring-[3px] focus-visible:ring-[#197a69]/[0.16]" id="nature" type="text" formControlName="nature" placeholder="Timid" />
+            @if (pokemonForm.controls.nature.invalid && pokemonForm.controls.nature.touched) {
+              <p class="mt-1.5 text-[0.8rem] text-[#a43c32]">Nature is required.</p>
+            }
+          </div>
+        </div>
+
+        @if (errorMessage()) {
+          <p class="mt-4 text-[0.8rem] text-[#a43c32]" role="alert">{{ errorMessage() }}</p>
+        }
+
+        <div class="mt-6 flex flex-wrap items-center gap-[9px]">
+          <button class="min-h-10 rounded bg-[#176d60] px-3.5 py-2.5 font-sans text-[0.88rem] font-bold text-white transition-colors duration-150 hover:bg-[#10574d] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#d18d54] disabled:cursor-not-allowed disabled:opacity-50" type="submit" [disabled]="pokemonForm.invalid">
+            {{ editingId() ? 'Save changes' : 'Add to registry' }}
+          </button>
+          @if (editingId()) {
+            <button class="min-h-10 rounded bg-[#e4eee8] px-3.5 py-2.5 font-sans text-[0.88rem] font-bold text-[#28564b] transition-colors duration-150 hover:bg-[#d5e5dc] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#d18d54]" type="button" (click)="cancelEdit()">Cancel</button>
+          }
+        </div>
+      </form>
+    </section>
+
+    <section class="min-w-0 pt-2 max-[760px]:pt-0" aria-labelledby="roster-title">
+      <div class="mb-[18px] flex items-end justify-between gap-5">
+        <div>
+          <p class="mb-2 text-[0.72rem] font-extrabold tracking-[0.12em] text-[#527a69]">COLLECTION</p>
+          <h2 id="roster-title" class="m-0 font-serif text-[1.65rem] font-medium">Registered Pokémon</h2>
+        </div>
+      </div>
+
+      @if (pokemonService.pokemonList().length > 0) {
+        <ul class="m-0 grid list-none gap-2.5 p-0">
+          @for (pokemon of pokemonService.pokemonList(); track pokemon._id) {
+            <li class="flex items-center justify-between gap-[18px] rounded border border-l-4 border-[#d0d9d0] border-l-[#d28650] bg-white/[0.78] px-[18px] py-[17px] max-[520px]:items-start max-[520px]:flex-col">
+              <div class="min-w-0">
+                <h3 class="mb-[5px] flex flex-wrap items-baseline gap-[9px] text-[1.05rem] font-bold text-[#203a36]">
+                  {{ pokemon.name }}
+                  <span class="text-[0.82rem] font-semibold text-[#527a69]">Lv. {{ pokemon.level }}</span>
+                </h3>
+                <p class="mb-0 text-[0.87rem] text-[#587067]">
+                  {{ pokemon.type }} type <span class="px-[5px] text-[#cb7950]">/</span> {{ pokemon.nature }} nature
+                </p>
+              </div>
+              <div class="flex flex-wrap items-center gap-[9px]">
+                <button class="min-h-10 rounded bg-[#e4eee8] px-3.5 py-2.5 font-sans text-[0.88rem] font-bold text-[#28564b] transition-colors duration-150 hover:bg-[#d5e5dc] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#d18d54]" type="button" (click)="startEdit(pokemon)">Edit</button>
+                <button
+                  class="min-h-10 rounded bg-[#f7e8e0] px-3.5 py-2.5 font-sans text-[0.88rem] font-bold text-[#9c4437] transition-colors duration-150 hover:bg-[#f0d6ca] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#d18d54] disabled:cursor-not-allowed disabled:opacity-50"
+                  type="button"
+                  [disabled]="deletingId() === pokemon._id"
+                  (click)="deletePokemon(pokemon)">
+                  {{ deletingId() === pokemon._id ? 'Releasing…' : 'Release' }}
+                </button>
+              </div>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="border-t border-[#cbd5ca] py-[26px] text-[#64766b]">No Pokémon registered yet.</p>
+      }
+    </section>
+  </div>
+</main>
